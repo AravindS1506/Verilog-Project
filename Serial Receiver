@@ -1,0 +1,54 @@
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+); 
+    parameter [2:0] idle=3'b000,start=3'b001,receive=3'b010,wai=3'b011,stop=3'b100;
+    reg [2:0] state,next_state;
+    reg [3:0] count;
+    always@(*) begin
+        case(state)
+            idle:next_state=(in)?idle:start;
+            start:next_state=receive;
+            receive: begin
+                if(count==8)
+                    next_state=in?stop:wai;
+            	else
+                    next_state=receive;
+            end
+            wai:next_state=in?idle:wai;
+            stop:next_state=in?idle:start;
+        endcase
+    end
+    
+    always@(posedge clk) begin
+        if(reset)
+            state<=idle;
+        else
+            state<=next_state;
+    end
+    always@(posedge clk) begin
+        if(reset) begin
+            done<=0;
+            count<=0;
+        end
+        else begin
+            case(next_state)
+                receive: begin
+                    count<=count+1;
+                    done<=0;
+                end
+                stop: begin
+                    count<=0;
+                    done<=1;
+                end
+                default begin
+                    count<=0;
+                    done<=0;
+                end
+            endcase
+        end
+    end
+    
+endmodule
