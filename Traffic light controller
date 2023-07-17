@@ -7,10 +7,9 @@ input C, // sensor
    clk, // clock = 50 MHz
    rst_n; // reset active low
 output reg[2:0] light_highway, light_farm; // output of lights
-// fpga4student.com FPGA projects, VHDL projects, Verilog projects
 reg[27:0] count=0,count_delay=0;
 reg delay10s=0, delay3s1=0,delay3s2=0,RED_count_en=0,YELLOW_count_en1=0,YELLOW_count_en2=0;
-wire clk_enable; // clock enable signal for 1s
+wire clk_enable;
 reg[1:0] state, next_state;
 // next state
 always @(posedge clk or negedge rst_n)
